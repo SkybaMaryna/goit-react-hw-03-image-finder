@@ -1,4 +1,4 @@
-import React from 'react';
+import PropTypes from 'prop-types';
 import {
   StyledGalleryImage,
   StyledGalleryItem,
@@ -16,4 +16,12 @@ export const ImageGalleryItem = ({
       <StyledGalleryImage src={url} alt={alt} />
     </StyledGalleryItem>
   );
+};
+
+ImageGalleryItem.propTypes = {
+  url: PropTypes.string.isRequired,
+  alt: PropTypes.string.isRequired,
+  tags: PropTypes.string.isRequired,
+  largeImageURL: PropTypes.string,
+  openModal: PropTypes.func.isRequired,
 };

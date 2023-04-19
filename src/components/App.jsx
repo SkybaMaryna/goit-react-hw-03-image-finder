@@ -16,6 +16,7 @@ export class App extends Component {
     largeImg: null,
     tags: null,
     showModal: false,
+    totalImages: null,
   };
 
   async componentDidUpdate(prevProps, prevState) {
@@ -24,8 +25,10 @@ export class App extends Component {
       try {
         this.setState({ loading: true });
         const imgObj = await getImages(inputValue, page);
+
         this.setState(prevState => ({
           images: [...prevState.images, ...imgObj.hits],
+          totalImages: imgObj.totalHits,
         }));
       } catch (error) {
         this.setState({ error });
@@ -45,14 +48,10 @@ export class App extends Component {
 
   openModal = (largeImg, tags) => {
     this.setState({ largeImg, tags, showModal: true });
-    document.addEventListener('keydown', this.handleKeydown);
   };
 
-  handleKeydown = e => {
-    if (e.key === 'Escape') {
-      this.setState({ showModal: false });
-      document.removeEventListener('keydown', this.handleKeydown);
-    }
+  closeModal = () => {
+    this.setState({ showModal: false });
   };
 
   onBackdropClick = e => {
@@ -62,7 +61,8 @@ export class App extends Component {
   };
 
   render() {
-    const { images, loading, largeImg, tags, showModal } = this.state;
+    const { images, loading, largeImg, tags, showModal, totalImages } =
+      this.state;
     return (
       <div>
         <Searchbar onSubmit={this.handleSearch} />
@@ -70,10 +70,11 @@ export class App extends Component {
         {loading && <ThreeDots />}
 
         {images.length !== 0 && (
-          <>
-            <ImageGallery images={images} openModal={this.openModal} />
-            <Button onLoadMore={this.handleLoad} />
-          </>
+          <ImageGallery images={images} openModal={this.openModal} />
+        )}
+
+        {images.length !== 0 && totalImages !== images.length && (
+          <Button onLoadMore={this.handleLoad} />
         )}
 
         {showModal && (
@@ -81,6 +82,7 @@ export class App extends Component {
             largeImg={largeImg}
             tags={tags}
             onBackdropClick={this.onBackdropClick}
+            closeModal={this.closeModal}
           />
         )}
       </div>
